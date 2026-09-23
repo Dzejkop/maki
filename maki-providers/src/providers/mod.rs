@@ -41,6 +41,8 @@ pub(crate) mod tensorx;
 pub(crate) mod xai;
 pub(crate) mod zai;
 
+pub use openai::platform::set_codex_client_version;
+
 const LOW_SPEED_BYTES_PER_SEC: u32 = 1;
 const UNMAPPED_SSE_ERROR_STATUS: u16 = 400;
 const EMPTY_SSE_ERROR_MESSAGE: &str = "provider sent an error frame with no detail";

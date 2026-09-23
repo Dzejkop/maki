@@ -177,6 +177,8 @@ fn build_stack(
         },
     )?;
 
+    maki_providers::set_codex_client_version(config.provider.codex_client_version.clone());
+
     let commands = discover_commands(cli.no_commands, launch.cwd);
 
     let model_result = setup::resolve_model(cli.model.as_deref(), &config.provider, launch.storage);

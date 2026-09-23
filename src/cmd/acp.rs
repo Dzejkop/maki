@@ -51,6 +51,8 @@ pub fn run(
     )?;
     super::report_warnings(warnings);
 
+    maki_providers::set_codex_client_version(config.provider.codex_client_version.clone());
+
     let timeouts = maki_providers::Timeouts::from(&config.provider);
 
     let model = setup::resolve_model(model_arg.as_deref(), &config.provider, &storage)?;

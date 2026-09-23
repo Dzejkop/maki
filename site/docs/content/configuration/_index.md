@@ -131,16 +131,17 @@ How many lines of output to show per tool in the UI. All values are `usize` with
 
 ### `provider`
 
-| Field | Type | Default | Min | Description |
+| Field | Type | Default | Env | Description |
 |-------|------|---------|-----|-------------|
 | `default_model` | String | `none` | - | Default model identifier (e.g. `anthropic/claude-sonnet-4-6`) |
 | `allowed_models` | string[] | `[]` | - | Glob patterns for permitted qualified model specs; empty permits all models |
 | `excluded_models` | string[] | `[]` | - | Glob patterns for excluded qualified model specs; exclusions take precedence |
-| `connect_timeout_secs` | u64 | `10` | 1 | HTTP connect timeout (seconds) |
-| `low_speed_timeout_secs` | u64 | `120` | 1 | Low speed timeout (seconds with less than 1 byte received) |
-| `stream_timeout_secs` | u64 | `300` | 10 | Streaming response timeout (seconds) |
-| `retry_base_ms` | u64 | `2000` | 1 | Base delay between retries (milliseconds, grows per attempt) |
-| `retry_max_ms` | u64 | `60000` | 1 | Cap on the guessed retry backoff (milliseconds) |
+| `codex_client_version` | string | `none` | `MAKI_CODEX_CLIENT_VERSION` | Codex CLI version reported to the ChatGPT coding-plan backend; raise it to unlock models newer than the built-in default |
+| `connect_timeout_secs` | u64 | `10` | - | HTTP connect timeout (seconds) |
+| `low_speed_timeout_secs` | u64 | `120` | - | Low speed timeout (seconds with less than 1 byte received) |
+| `stream_timeout_secs` | u64 | `300` | - | Streaming response timeout (seconds) |
+| `retry_base_ms` | u64 | `2000` | - | Base delay between retries (milliseconds, grows per attempt) |
+| `retry_max_ms` | u64 | `60000` | - | Cap on the guessed retry backoff (milliseconds) |
 | `max_retries` | u32 | `5` | - | Max retries on a rate limit the server sent no Retry-After for, 0 to never retry them |
 | `max_timeout_retries` | u32 | `10` | - | Max retries on stream timeouts |
 

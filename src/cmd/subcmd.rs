@@ -557,6 +557,8 @@ pub fn models(no_plugins: bool, no_jit: bool, refresh: bool, trust_mode: TrustMo
     )?;
     super::report_warnings(warnings);
 
+    maki_providers::set_codex_client_version(config.provider.codex_client_version.clone());
+
     let mut refresh_failure = None;
     if refresh {
         match maki_providers::refresh_catalog() {

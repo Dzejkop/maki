@@ -1,4 +1,4 @@
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, OnceLock};
 
 use flume::Sender;
 use maki_storage::StateDir;
@@ -52,7 +52,33 @@ const USAGE_URL: &str = "https://chatgpt.com/backend-api/wham/usage";
 // The backend hides models newer than this Codex CLI version, so bump it when
 // a fresh model is missing from the list.
 const CODEX_CLIENT_VERSION: &str = "0.156.1";
+const CODEX_CLIENT_VERSION_ENV: &str = "MAKI_CODEX_CLIENT_VERSION";
 const PLAN_MODELS_PATH: &str = "/models?client_version=";
+
+/// Overrides [`CODEX_CLIENT_VERSION`]. The backend hides models newer than the
+/// reported version, so raising it unlocks models released after the built-in
+/// default without waiting for a maki release.
+static CODEX_CLIENT_VERSION_OVERRIDE: OnceLock<String> = OnceLock::new();
+
+/// Set the Codex CLI version maki reports to the ChatGPT coding-plan backend.
+/// `None` keeps the built-in default. Call once at startup, before any request.
+pub fn set_codex_client_version(version: Option<String>) {
+    if let Some(version) = version {
+        let _ = CODEX_CLIENT_VERSION_OVERRIDE.set(version);
+    }
+}
+
+fn codex_client_version() -> String {
+    CODEX_CLIENT_VERSION_OVERRIDE
+        .get()
+        .cloned()
+        .or_else(|| {
+            std::env::var(CODEX_CLIENT_VERSION_ENV)
+                .ok()
+                .filter(|v| !v.is_empty())
+        })
+        .unwrap_or_else(|| CODEX_CLIENT_VERSION.to_string())
+}
 const LISTED_VISIBILITY: &str = "list";
 const ACCOUNT_ID_HEADER: &str = "chatgpt-account-id";
 const FAST_SERVICE_TIER: &str = "priority";
@@ -389,8 +415,9 @@ impl OpenAi {
     async fn fetch_plan_models(&self) -> Result<Vec<ModelInfo>, AgentError> {
         let auth = self.codex_auth()?;
         let url = format!(
-            "{}{PLAN_MODELS_PATH}{CODEX_CLIENT_VERSION}",
-            auth::CODING_PLAN_BASE_URL
+            "{}{PLAN_MODELS_PATH}{}",
+            auth::CODING_PLAN_BASE_URL,
+            codex_client_version()
         );
         parse_plan_models(
             &self.compat.get_text(&auth, &url).await?,

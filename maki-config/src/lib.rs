@@ -704,6 +704,7 @@ pub struct ProviderFileConfig {
     pub retry_max_ms: Option<u64>,
     pub max_retries: Option<u32>,
     pub max_timeout_retries: Option<u32>,
+    pub codex_client_version: Option<String>,
 }
 
 impl ProviderFileConfig {
@@ -720,7 +721,8 @@ impl ProviderFileConfig {
             retry_base_ms,
             retry_max_ms,
             max_retries,
-            max_timeout_retries
+            max_timeout_retries,
+            codex_client_version
         );
     }
 }
@@ -1376,6 +1378,14 @@ pub struct ProviderConfig {
     )]
     pub excluded_models: Vec<String>,
 
+    #[config(
+        ty = "string",
+        default_doc = "none",
+        env = "MAKI_CODEX_CLIENT_VERSION",
+        desc = "Codex CLI version reported to the ChatGPT coding-plan backend; raise it to unlock models newer than the built-in default"
+    )]
+    pub codex_client_version: Option<String>,
+
     #[config(skip)]
     pub model_policy: ModelPolicy,
 
@@ -1427,6 +1437,7 @@ impl Default for ProviderConfig {
             retry_max_ms: DEFAULT_RETRY_MAX_MS,
             max_retries: DEFAULT_MAX_RETRIES,
             max_timeout_retries: DEFAULT_MAX_TIMEOUT_RETRIES,
+            codex_client_version: None,
         }
     }
 }
@@ -1441,6 +1452,7 @@ impl ProviderConfig {
             allowed_models,
             excluded_models,
             model_policy,
+            codex_client_version: f.codex_client_version,
             connect_timeout: Duration::from_secs(
                 f.connect_timeout_secs
                     .unwrap_or(DEFAULT_CONNECT_TIMEOUT_SECS),

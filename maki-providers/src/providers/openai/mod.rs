@@ -1,5 +1,5 @@
 pub mod auth;
-mod platform;
+pub(crate) mod platform;
 pub(crate) mod responses;
 
 pub use platform::OpenAi;
